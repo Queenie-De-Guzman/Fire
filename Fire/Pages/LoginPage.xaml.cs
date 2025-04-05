@@ -26,7 +26,7 @@ namespace Fire.Pages
 			});
 		}
 
-		
+
 		private async void OnLoginClicked(object sender, EventArgs e)
 		{
 			try
@@ -59,9 +59,9 @@ namespace Fire.Pages
 				await DisplayAlert("Login Failed", ex.Message, "OK");
 			}
 		}
-
 		private async void GoogleLoginClicked(object sender, EventArgs e)
 		{
+#if ANDROID || IOS || MACCATALYST
 			try
 			{
 				var authResult = await WebAuthenticator.AuthenticateAsync(new WebAuthenticatorOptions
@@ -99,15 +99,20 @@ namespace Fire.Pages
 			{
 				await DisplayAlert("Login Failed", ex.Message, "OK");
 			}
+#else
+			await DisplayAlert("Unsupported", "Google login is not supported on this platform.", "OK");
+#endif
 		}
+
 		private async void FacebookLoginClicked(object sender, EventArgs e)
 		{
+#if ANDROID || IOS || MACCATALYST
 			try
 			{
 				var authResult = await WebAuthenticator.AuthenticateAsync(new WebAuthenticatorOptions
 				{
 					Url = new Uri("https://www.facebook.com/v12.0/dialog/oauth?" +
-								  "client_id=1198827861641806" +
+								  "client_id=641791538781902" +
 								  "&redirect_uri=https://maui-49b65.firebaseapp.com/__/auth/handler" +
 								  "&response_type=token" +
 								  "&scope=email"),
@@ -116,7 +121,7 @@ namespace Fire.Pages
 
 				if (authResult?.Properties.TryGetValue("access_token", out var token) == true)
 				{
-					var firebaseAuthUrl = $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=1198827861641806";
+					var firebaseAuthUrl = $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=AIzaSyDlkEYudHYVDZ9xF8tAAdH4Zocos1MPMec";
 
 					var content = new StringContent($"{{\"postBody\":\"access_token={token}&providerId=facebook.com\",\"requestUri\":\"https://maui-49b65.firebaseapp.com/__/auth/handler\",\"returnIdpCredential\":true,\"returnSecureToken\":true}}", System.Text.Encoding.UTF8, "application/json");
 
@@ -139,8 +144,9 @@ namespace Fire.Pages
 			{
 				await DisplayAlert("Login Failed", ex.Message, "OK");
 			}
-
-
+#else
+			await DisplayAlert("Unsupported", "Facebook login is not supported on this platform.", "OK");
+#endif
 		}
 
 
